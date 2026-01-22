@@ -169,8 +169,8 @@ if(QGC_ENABLE_HERELINK AND ANDROID)
     set(QGC_QT_MAXIMUM_VERSION "6.6.3" CACHE STRING "Maximum Supported Qt Version")
     set(QGC_QT_ANDROID_MIN_SDK_VERSION "25" CACHE STRING "Android Min SDK Version")
 else()
-    set(QGC_QT_MINIMUM_VERSION "6.8.3" CACHE STRING "Minimum Supported Qt Version")
-    set(QGC_QT_MAXIMUM_VERSION "6.8.3" CACHE STRING "Maximum Supported Qt Version")
+    set(QGC_QT_MINIMUM_VERSION "6.2.0" CACHE STRING "Minimum Supported Qt Version")
+    set(QGC_QT_MAXIMUM_VERSION "6.99.0" CACHE STRING "Maximum Supported Qt Version")
     set(QGC_QT_ANDROID_MIN_SDK_VERSION "28" CACHE STRING "Android Min SDK Version")
 endif()
 
@@ -202,6 +202,7 @@ find_package(Qt6
         Xml
     OPTIONAL_COMPONENTS
         Bluetooth
+        LocationPrivate
         MultimediaQuickPrivate
         Quick3D
         SerialPort
