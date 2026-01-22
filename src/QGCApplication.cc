@@ -65,6 +65,7 @@
 #include "AppSettings.h"
 #include "ShapeFileHelper.h"
 #include "SyslinkComponentController.h"
+#include "TrackingManager.h"
 #include "UDPLink.h"
 #include "Vehicle.h"
 #include "VehicleComponent.h"
@@ -297,6 +298,7 @@ void QGCApplication::init()
     qmlRegisterUncreatableType<AutoPilotPlugin>("QGroundControl.AutoPilotPlugin", 1, 0, "AutoPilotPlugin", "Reference only");
     qmlRegisterType<ESP8266ComponentController>("QGroundControl.Controllers", 1, 0, "ESP8266ComponentController");
     qmlRegisterType<SyslinkComponentController>("QGroundControl.Controllers", 1, 0, "SyslinkComponentController");
+    qmlRegisterType<TrackingManager>("QGroundControl.Controllers", 1, 0, "TrackingManager");
 
 
     qmlRegisterUncreatableType<VehicleComponent>("QGroundControl.AutoPilotPlugin", 1, 0, "VehicleComponent", "Reference only");

@@ -46,6 +46,11 @@ Item {
         Component.onCompleted:  start()
     }
 
+    // Backend for ROI tracking
+    TrackingManager {
+        id: trackingManager
+    }
+
     property bool   _mainWindowIsMap:       mapControl.pipState.state === mapControl.pipState.fullState
     property bool   _isFullWindowItemDark:  _mainWindowIsMap ? mapControl.isSatelliteMap : true
     property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
@@ -177,6 +182,32 @@ Item {
         Viewer3D{
             id:                     viewer3DWindow
             anchors.fill:           parent
+        }
+
+        // ROI Selector - MUST be last to paint on top of video
+        // But with Z-order below widgets so buttons remain clickable
+        RoiSelector {
+            id:             roiSelector
+            anchors.fill:   parent
+            
+            // Dynamic Z-order: stay above video but below widgets
+            // When map is showing, go negative to be completely out of the way
+            z:              _mainWindowIsMap ? -1 : (QGroundControl.zOrderWidgets - 1)
+            
+            // Only visible in video mode with video available
+            visible:        !_mainWindowIsMap && QGroundControl.videoManager.hasVideo && !QGroundControl.videoManager.fullScreen
+            
+            // Visual fade for smooth transitions
+            opacity:        visible ? 1.0 : 0.0
+            Behavior on opacity { NumberAnimation { duration: 150 } }
+            
+            Component.onCompleted: console.log("ROI Selector initialized")
+            Component.onDestruction: console.log("ROI Selector destroyed")
+            
+            onRoiSelected: function(x, y, w, h) {
+                console.log("ROI selected after mode switch check")
+                trackingManager.processSelection(x, y, w, h)
+            }
         }
     }
 }

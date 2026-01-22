@@ -57,6 +57,7 @@ qt_add_qml_module(FlightDisplayModule
         ProximityRadarValues.qml
         ProximityRadarVideoView.qml
         QGCVideoBackground.qml
+        RoiSelector.qml
         RoverChecklist.qml
         SubChecklist.qml
         TelemetryValuesBar.qml
@@ -65,3 +66,10 @@ qt_add_qml_module(FlightDisplayModule
         VirtualJoystick.qml
     NO_PLUGIN # Required by Qt 6.6.3. TODO: Remove when no longer supported.
 )
+
+target_sources(${CMAKE_PROJECT_NAME}
+    PRIVATE
+        TrackingManager.h
+)
+
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
