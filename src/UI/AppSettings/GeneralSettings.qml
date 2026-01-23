@@ -55,6 +55,13 @@ SettingsPage {
             visible:    _appSettings.followTarget.visible
         }
 
+        LabelledFactTextField {
+            Layout.fillWidth:           true
+            label:                      qsTr("ROI UDP Target IP")
+            fact:                       _appSettings.roiUdpTargetIP
+            visible:                    _appSettings.roiUdpTargetIP.visible
+        }
+
         FactCheckBoxSlider {
             Layout.fillWidth: true
             text:           qsTr("Mute all audio output")

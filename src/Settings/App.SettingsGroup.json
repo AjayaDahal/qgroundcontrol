@@ -254,6 +254,13 @@
     "shortDesc": "AirLink Password",
     "type": "string",
     "default": ""
+},
+{
+    "name": "roiUdpTargetIP",
+    "shortDesc": "ROI UDP Target IP",
+    "longDesc": "Target IP address for sending ROI tracking data via UDP when no vehicle is connected. Used for testing and debugging object tracking.",
+    "type": "string",
+    "default": "192.168.1.183"
 }
 ]
 }

@@ -20,6 +20,8 @@
 #include "VehicleLinkManager.h"
 #include "LinkInterface.h"
 #include "MAVLinkProtocol.h"
+#include "SettingsManager.h"
+#include "AppSettings.h"
 #include <QtCore/QDateTime>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QHostAddress>
@@ -126,8 +128,9 @@ void TrackingManager::sendROIViaUDP(float x, float y, float w, float h)
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     unsigned int len = mavlink_msg_to_send_buffer(buffer, &msg);
 
-    // Send via UDP to the target IP and port
-    QHostAddress targetIP("192.168.1.183");
+    // Get target IP from settings
+    QString targetIPString = SettingsManager::instance()->appSettings()->roiUdpTargetIP()->rawValue().toString();
+    QHostAddress targetIP(targetIPString);
     quint16 targetPort = 14551;
     
     qint64 bytesSent = udpSocket->writeDatagram(reinterpret_cast<const char*>(buffer), len, targetIP, targetPort);
