@@ -28,11 +28,17 @@ Item {
     signal roiSelected(real x, real y, real w, real h)
 
     // Private properties for tracking drag state
-    property real _startX: 0.0
-    property real _startY: 0.0
-    property real _endX: 0.0
-    property real _endY: 0.0
+    property real _pressX: 0.0      // Initial press position
+    property real _pressY: 0.0
+    property real _currentX: 0.0    // Current mouse position
+    property real _currentY: 0.0
     property bool _isDragging: false
+
+    // Computed properties for normalized rectangle (always positive dimensions)
+    property real _rectX: Math.min(_pressX, _currentX)
+    property real _rectY: Math.min(_pressY, _currentY)
+    property real _rectWidth: Math.abs(_currentX - _pressX)
+    property real _rectHeight: Math.abs(_currentY - _pressY)
 
     // Mouse interaction area
     MouseArea {
@@ -43,27 +49,31 @@ Item {
 
         onPressed: function(mouse) {
             if (!root.visible) return
-            _startX = mouse.x
-            _startY = mouse.y
-            _endX = mouse.x
-            _endY = mouse.y
+            
+            // Store initial press position
+            _pressX = mouse.x
+            _pressY = mouse.y
+            _currentX = mouse.x
+            _currentY = mouse.y
             _isDragging = true
         }
 
         onPositionChanged: function(mouse) {
             if (_isDragging) {
-                _endX = mouse.x
-                _endY = mouse.y
+                // Update current position - computed properties handle normalization
+                _currentX = mouse.x
+                _currentY = mouse.y
             }
         }
 
         onReleased: function(mouse) {
             if (_isDragging) {
-                _endX = mouse.x
-                _endY = mouse.y
+                // Update final position
+                _currentX = mouse.x
+                _currentY = mouse.y
                 _isDragging = false
 
-                // Calculate normalized coordinates
+                // Use the normalized rectangle properties for ROI calculation
                 calculateAndEmitROI()
             }
         }
@@ -73,7 +83,7 @@ Item {
         }
     }
 
-    // Visual feedback rectangle
+    // Visual feedback rectangle - uses computed normalized properties
     Rectangle {
         id: selectionBox
         visible: _isDragging
@@ -81,13 +91,14 @@ Item {
         border.color: "#FF0000"  // Red
         border.width: 2
 
-        x: Math.min(_startX, _endX)
-        y: Math.min(_startY, _endY)
-        width: Math.abs(_endX - _startX)
-        height: Math.abs(_endY - _startY)
+        // Use computed properties that are always normalized (positive dimensions, true top-left)
+        x: _rectX
+        y: _rectY
+        width: _rectWidth
+        height: _rectHeight
     }
 
-    // Calculate and emit normalized ROI coordinates
+    // Calculate and emit normalized ROI coordinates using the corrected rectangle properties
     function calculateAndEmitROI() {
         // Ensure we have valid dimensions
         if (root.width <= 0 || root.height <= 0) {
@@ -95,23 +106,32 @@ Item {
             return
         }
 
-        // Calculate bounding box in screen coordinates
-        var minX = Math.min(_startX, _endX)
-        var minY = Math.min(_startY, _endY)
-        var maxX = Math.max(_startX, _endX)
-        var maxY = Math.max(_startY, _endY)
+        // Use the already-normalized rectangle properties
+        // These are guaranteed to have positive dimensions and correct top-left corner
+        var screenX = _rectX
+        var screenY = _rectY
+        var screenW = _rectWidth
+        var screenH = _rectHeight
 
         // Clamp to valid screen bounds
-        minX = Math.max(0, Math.min(minX, root.width))
-        minY = Math.max(0, Math.min(minY, root.height))
-        maxX = Math.max(0, Math.min(maxX, root.width))
-        maxY = Math.max(0, Math.min(maxY, root.height))
+        screenX = Math.max(0, Math.min(screenX, root.width))
+        screenY = Math.max(0, Math.min(screenY, root.height))
+        var maxX = Math.min(screenX + screenW, root.width)
+        var maxY = Math.min(screenY + screenH, root.height)
+        
+        // Recalculate width/height after clamping
+        screenW = maxX - screenX
+        screenH = maxY - screenY
 
         // Calculate normalized coordinates (0.0 to 1.0)
-        var normX = minX / root.width
-        var normY = minY / root.height
-        var normW = (maxX - minX) / root.width
-        var normH = (maxY - minY) / root.height
+        var normX = screenX / root.width
+        var normY = screenY / root.height
+        var normW = screenW / root.width
+        var normH = screenH / root.height
+
+        // Debug output
+        console.log("RoiSelector: Screen coords:", screenX, screenY, screenW, screenH)
+        console.log("RoiSelector: Normalized:", normX.toFixed(3), normY.toFixed(3), normW.toFixed(3), normH.toFixed(3))
 
         // Only emit if we have a valid selection (non-zero area)
         if (normW > 0.001 && normH > 0.001) {

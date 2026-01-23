@@ -186,9 +186,10 @@ Item {
 
         // ROI Selector - MUST be last to paint on top of video
         // But with Z-order below widgets so buttons remain clickable
+        // Anchored to videoControl to match video coordinates exactly (fixes toolbar offset bug)
         RoiSelector {
             id:             roiSelector
-            anchors.fill:   parent
+            anchors.fill:   videoControl
             
             // Dynamic Z-order: stay above video but below widgets
             // When map is showing, go negative to be completely out of the way

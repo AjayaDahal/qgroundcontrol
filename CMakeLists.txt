@@ -184,33 +184,33 @@ find_package(Qt6
         Core5Compat
         Gui
         LinguistTools
-        Location
         Multimedia
         Network
         OpenGL
         Positioning
         Qml
-        QmlIntegration
         Quick
         QuickControls2
         QuickWidgets
         Sensors
         Sql
         Svg
-        TextToSpeech
         Widgets
         Xml
     OPTIONAL_COMPONENTS
         Bluetooth
+        Location
         LocationPrivate
         MultimediaQuickPrivate
+        QmlIntegration
+        TextToSpeech
         Quick3D
         SerialPort
         Test
 )
 
 if(LINUX)
-    find_package(Qt6 COMPONENTS WaylandClient)
+    find_package(Qt6 COMPONENTS WaylandClient QUIET)
 endif()
 
 # Set extra standard project setup options for Qt 6.7.0 and above
@@ -219,11 +219,18 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.7.0)
     list(APPEND EXTRA_STANDARD_PROJECT_SETUP_OPTIONS I18N_SOURCE_LANGUAGE en)
 endif()
 
-qt_standard_project_setup(
-    REQUIRES ${QGC_QT_MINIMUM_VERSION}
-    SUPPORTS_UP_TO ${QGC_QT_MAXIMUM_VERSION}
-    ${EXTRA_STANDARD_PROJECT_SETUP_OPTIONS}
-)
+if(COMMAND qt_standard_project_setup)
+    qt_standard_project_setup(
+        REQUIRES ${QGC_QT_MINIMUM_VERSION}
+        SUPPORTS_UP_TO ${QGC_QT_MAXIMUM_VERSION}
+        ${EXTRA_STANDARD_PROJECT_SETUP_OPTIONS}
+    )
+else()
+    # Fallback for older Qt versions
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
+endif()
 
 qt_policy(
     SET QTP0001 NEW

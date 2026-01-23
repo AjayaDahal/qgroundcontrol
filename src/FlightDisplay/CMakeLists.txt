@@ -70,6 +70,7 @@ qt_add_qml_module(FlightDisplayModule
 target_sources(${CMAKE_PROJECT_NAME}
     PRIVATE
         TrackingManager.h
+        TrackingManager.cpp
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

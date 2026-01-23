@@ -17,7 +17,12 @@
 
 #include <QObject>
 #include <QDebug>
-#include <memory>
+#include <cstring>
+
+// Forward declarations
+class QGCApplication;
+class MultiVehicleManager;
+class Vehicle;
 
 /**
  * @class TrackingManager
@@ -91,9 +96,8 @@ public:
                     .arg(w, 0, 'f', 3)
                     .arg(h, 0, 'f', 3);
 
-        // TODO: Add MAVLink transmission logic here
-        // Example:
-        // sendROIToVehicle(x, y, w, h);
+        // Send ROI via MAVLink DEBUG_FLOAT_ARRAY
+        sendROIToVehicle(x, y, w, h);
         
         emit roiProcessed(x, y, w, h);
     }
@@ -109,6 +113,21 @@ signals:
     void roiProcessed(float x, float y, float w, float h);
 
 private:
-    // Future: Add member variables for tracking state if needed
-    // std::unique_ptr<MAVLinkInterface> _mavlinkInterface;
+    /**
+     * @brief Send ROI data to the active vehicle via MAVLink DEBUG_FLOAT_ARRAY
+     * @param x Normalized X coordinate
+     * @param y Normalized Y coordinate
+     * @param w Normalized width
+     * @param h Normalized height
+     */
+    void sendROIToVehicle(float x, float y, float w, float h);
+    
+    /**
+     * @brief Send ROI data via UDP when no vehicle is connected (debug mode)
+     * @param x Normalized X coordinate
+     * @param y Normalized Y coordinate
+     * @param w Normalized width
+     * @param h Normalized height
+     */
+    void sendROIViaUDP(float x, float y, float w, float h);
 };
