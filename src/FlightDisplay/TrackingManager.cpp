@@ -28,6 +28,11 @@
 
 void TrackingManager::sendROIToVehicle(float x, float y, float w, float h)
 {
+    // FORCE UDP MODE FOR TESTING - Always bypass vehicle link
+    qDebug() << "TrackingManager: Forcing UDP mode for ROI transmission";
+    sendROIViaUDP(x, y, w, h);
+    return;
+    
     // Get the active vehicle
     Vehicle* vehicle = MultiVehicleManager::instance()->activeVehicle();
     
@@ -131,7 +136,7 @@ void TrackingManager::sendROIViaUDP(float x, float y, float w, float h)
     // Get target IP from settings
     QString targetIPString = SettingsManager::instance()->appSettings()->roiUdpTargetIP()->rawValue().toString();
     QHostAddress targetIP(targetIPString);
-    quint16 targetPort = 14551;
+    quint16 targetPort = 14560;
     
     qint64 bytesSent = udpSocket->writeDatagram(reinterpret_cast<const char*>(buffer), len, targetIP, targetPort);
     
