@@ -28,11 +28,6 @@
 
 void TrackingManager::sendROIToVehicle(float x, float y, float w, float h)
 {
-    // FORCE UDP MODE FOR TESTING - Always bypass vehicle link
-    qDebug() << "TrackingManager: Forcing UDP mode for ROI transmission";
-    sendROIViaUDP(x, y, w, h);
-    return;
-    
     // Get the active vehicle
     Vehicle* vehicle = MultiVehicleManager::instance()->activeVehicle();
     
